@@ -15,76 +15,113 @@ public class GameOfLifeService : IGameOfLifeService
 
     public async Task<BoardDTO> CreateBoardAsync(BoardUploadRequest request)
     {
-        var board = new Board
+        try
         {
-            Id = Guid.NewGuid(),
-            State = request.State,
-        };
-        
-        await _boardRepository.CreateBoardAsync(board);
-        
-        return new BoardDTO(board.Id, board.State);
+            var board = new Board
+            {
+                Id = Guid.NewGuid(),
+                State = request.State,
+            };
+
+            await _boardRepository.CreateBoardAsync(board);
+
+            return new BoardDTO(board.Id, board.State);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new ApplicationException(e.Message);
+        }
     }
 
     public async Task<bool[][]> GetNextState(Guid boardId)
     {
-        var board = await _boardRepository.GetBoardAsync(boardId);
-        if (board == null)
-            throw new KeyNotFoundException($"Board with id {boardId} not found.");
+        try
+        {
+            var board = await _boardRepository.GetBoardAsync(boardId);
+            if (board == null)
+                throw new KeyNotFoundException($"Board with id {boardId} not found.");
 
-        var nextState = CalculateNextState(board.State);
-        board.UpdateState(nextState);
-        await _boardRepository.UpdateBoardAsync(board);
-        return nextState;
+            var nextState = CalculateNextState(board.State);
+            board.UpdateState(nextState);
+            await _boardRepository.UpdateBoardAsync(board);
+            return nextState;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new ApplicationException(e.Message);
+        }
     }
 
     public async Task<bool[][]> GetStateAfter(Guid boardId, int steps)
     {
-        var board = await _boardRepository.GetBoardAsync(boardId);
-        if (board == null)
-            throw new KeyNotFoundException($"Board with id {boardId} not found.");
-
-        bool[][] currentState = board.State;
-        for (int i = 0; i < steps; i++)
+        try
         {
-            currentState = CalculateNextState(currentState);
-        }
+            var board = await _boardRepository.GetBoardAsync(boardId);
+            if (board == null)
+                throw new KeyNotFoundException($"Board with id {boardId} not found.");
 
-        board.UpdateState(currentState);
-        await _boardRepository.UpdateBoardAsync(board);
-        return currentState;
+            bool[][] currentState = board.State;
+            for (int i = 0; i < steps; i++)
+            {
+                currentState = CalculateNextState(currentState);
+            }
+
+            board.UpdateState(currentState);
+            await _boardRepository.UpdateBoardAsync(board);
+            return currentState;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new ApplicationException(e.Message);
+        }
     }
 
     public async Task<FinalStateDTO> GetFinalState(Guid boardId, int maxAttempts)
     {
-        var board = await _boardRepository.GetBoardAsync(boardId);
-        if (board == null)
-            throw new KeyNotFoundException($"Board with id {boardId} not found.");
-
-        bool[][] currentState = board.State;
-        var seenStates = new HashSet<string>();
-        string stateKey = SerializeState(currentState);
-        seenStates.Add(stateKey);
-        int attempts = 0;
-
-        while (attempts < maxAttempts)
+        try
         {
-            currentState = CalculateNextState(currentState);
-            attempts++;
+            var board = await _boardRepository.GetBoardAsync(boardId);
+            if (board == null)
+                throw new KeyNotFoundException($"Board with id {boardId} not found.");
 
-            stateKey = SerializeState(currentState);
-            if (seenStates.Contains(stateKey))
+            bool[][] currentState = board.State;
+            var seenStates = new HashSet<string>();
+            string stateKey = SerializeState(currentState);
+            seenStates.Add(stateKey);
+            int attempts = 0;
+
+            while (attempts < maxAttempts)
             {
-                board.UpdateState(currentState);
-                await _boardRepository.UpdateBoardAsync(board);
-                return new FinalStateDTO(currentState, attempts);
+                currentState = CalculateNextState(currentState);
+                attempts++;
+
+                stateKey = SerializeState(currentState);
+                if (seenStates.Contains(stateKey))
+                {
+                    board.UpdateState(currentState);
+                    await _boardRepository.UpdateBoardAsync(board);
+                    return new FinalStateDTO(currentState, attempts);
+                }
+
+                seenStates.Add(stateKey);
             }
 
-            seenStates.Add(stateKey);
+            throw new InvalidOperationException(
+                $"Não foi possível atingir um estado final após {maxAttempts} tentativas.");
         }
-
-        throw new InvalidOperationException(
-            $"Não foi possível atingir um estado final após {maxAttempts} tentativas.");
+        catch (InvalidOperationException e)
+        {
+            Console.WriteLine(e);
+            throw new ApplicationException(e.Message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new ApplicationException(e.Message);
+        }
     }
 
     // This method computes the next state of the board based on the rules of Conway’s Game of Life.

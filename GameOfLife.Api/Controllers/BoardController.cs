@@ -4,19 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameOfLife_NewVersion.Controllers;
 
-/// <summary>
-/// Controller for managing Game of Life boards.
-/// </summary>
+
 [ApiController]
 [Route("board")]
 public class BoardController : ControllerBase
 {
     private readonly IGameOfLifeService _gameOfLifeService;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BoardController"/> class.
-    /// </summary>
-    /// <param name="gameOfLifeService">The Game of Life service.</param>
+    
     public BoardController(IGameOfLifeService gameOfLifeService)
     {
         _gameOfLifeService = gameOfLifeService;
