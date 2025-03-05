@@ -87,7 +87,7 @@ public class GameOfLifeService : IGameOfLifeService
             $"Não foi possível atingir um estado final após {maxAttempts} tentativas.");
     }
 
-    // Método auxiliar para calcular o próximo estado do tabuleiro
+    // This method computes the next state of the board based on the rules of Conway’s Game of Life.
     private bool[][] CalculateNextState(bool[][] currentState)
     {
         int rows = currentState.Length;
@@ -101,7 +101,7 @@ public class GameOfLifeService : IGameOfLifeService
             {
                 int liveNeighbors = CountLiveNeighbors(currentState, i, j, rows, cols);
 
-                // Regras do Jogo da Vida:
+                // rules of the Game of Life
                 if (currentState[i][j])
                     nextState[i][j] = (liveNeighbors == 2 || liveNeighbors == 3);
                 else
@@ -112,7 +112,7 @@ public class GameOfLifeService : IGameOfLifeService
         return nextState;
     }
 
-    // Conta os vizinhos vivos de uma célula
+    // This method calculates the number of live (true) neighbors surrounding a specific cell on the board.
     private int CountLiveNeighbors(bool[][] board, int row, int col, int rows, int cols)
     {
         int count = 0;
@@ -120,17 +120,17 @@ public class GameOfLifeService : IGameOfLifeService
         {
             for (int j = col - 1; j <= col + 1; j++)
             {
-                if (i == row && j == col)
+                if (i == row && j == col) //It skips the center cell itself
                     continue;
-                if (i >= 0 && i < rows && j >= 0 && j < cols && board[i][j])
-                    count++;
+                if (i >= 0 && i < rows && j >= 0 && j < cols && board[i][j])//Before accessing a neighbor, it checks that the indices are within the board limits
+                    count++;//For each valid neighbor, if the cell is live (board[i][j] is true)
             }
         }
 
         return count;
     }
 
-    // Serializa o estado do tabuleiro para uma string, facilitando a comparação
+    
     private string SerializeState(bool[][] state)
     {
         return string.Join(";", state.Select(row => string.Join(",", row.Select(c => c ? "1" : "0"))));

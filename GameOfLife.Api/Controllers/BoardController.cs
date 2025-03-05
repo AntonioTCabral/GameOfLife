@@ -31,7 +31,7 @@ public class BoardController : ControllerBase
     /// otherwise, a Bad Request response is returned.
     /// </returns>
     [HttpPost("upload")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BoardDTO),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UploadBoard([FromBody] BoardUploadRequest request)
     {
