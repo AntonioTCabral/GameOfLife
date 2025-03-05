@@ -10,4 +10,8 @@
       <PackageReference Include="CouchbaseNetClient" Version="3.6.5" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GameOfLife.Application\GameOfLife.Application.csproj" />
+    </ItemGroup>
+
 </Project>

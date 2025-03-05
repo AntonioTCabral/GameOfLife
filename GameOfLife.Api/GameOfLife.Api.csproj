@@ -14,7 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
+      <ProjectReference Include="..\GameOfLife.Application\GameOfLife.Application.csproj" />
+      <ProjectReference Include="..\GameOfLife.Infrastructure\GameOfLife.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

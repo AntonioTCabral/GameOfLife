@@ -1,8 +1,11 @@
+using GameOfLife.Application.DTOs;
+
 namespace GameOfLife.Application.Services;
 
 public interface IGameOfLifeService
 {
-    bool[][] GetNextState(bool[][] currentState);
-    bool[][] GetStateAfter(bool[][] currentState, int steps);
-    bool[][] GetFinalState(bool[][] currentState, int maxAttempts, out int attemptsTaken);
+    Task<BoardDTO> CreateBoardAsync(BoardUploadRequest request);
+    Task<bool[][]> GetNextState(Guid boardId);
+    Task<bool[][]> GetStateAfter(Guid boardId, int steps);
+    Task<FinalStateDTO> GetFinalState(Guid boardId, int maxAttempts);
 }
